@@ -1,0 +1,18 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="20dp">
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="SerialSnap" android:textSize="30sp" android:textStyle="bold" android:textColor="@color/navy" />
+    <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="6dp" android:text="Photograph a label to capture its serial number." android:textSize="16sp" />
+    <Button android:id="@+id/scanButton" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="18dp" android:text="Take Picture & Scan" />
+    <Button android:id="@+id/clearButton" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="end" android:text="Clear list" style="@style/Widget.MaterialComponents.Button.TextButton" />
+    <TextView android:id="@+id/count" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="0 serial numbers" android:textStyle="bold" android:textSize="18sp" />
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="8dp">
+        <TextView android:id="@+id/serialList" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="No serial numbers yet." android:textIsSelectable="true" android:textSize="18sp" android:lineSpacingExtra="8dp" />
+    </ScrollView>
+</LinearLayout>

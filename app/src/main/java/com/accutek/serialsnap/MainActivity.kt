@@ -48,8 +48,9 @@ class MainActivity : AppCompatActivity() {
     private fun openCamera() {
         val dir = File(cacheDir, "photos").apply { mkdirs() }
         val file = File(dir, "serial_${System.currentTimeMillis()}.jpg")
-        photoUri = FileProvider.getUriForFile(this, "$packageName.files", file)
-        takePicture.launch(photoUri)
+        val uri = FileProvider.getUriForFile(this, "$packageName.files", file)
+        photoUri = uri
+        takePicture.launch(uri)
     }
 
     private fun scanImage(uri: Uri) {

@@ -1,0 +1,1 @@
+Triggers pull-request validation for the initial SerialSnap APK build.

@@ -1,0 +1,6 @@
+<resources>
+    <style name="Theme.SerialSnap" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/blue</item>
+        <item name="android:fontFamily">sans</item>
+    </style>
+</resources>

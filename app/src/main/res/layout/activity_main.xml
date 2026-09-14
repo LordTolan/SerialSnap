@@ -6,7 +6,7 @@
     <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content"
         android:layout_marginTop="6dp" android:text="Photograph a label to capture its serial number." android:textSize="16sp" />
     <Button android:id="@+id/scanButton" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="18dp" android:text="Take Picture & Scan" />
+        android:layout_marginTop="18dp" android:text="Take Picture &amp; Scan" />
     <Button android:id="@+id/clearButton" android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_gravity="end" android:text="Clear list" style="@style/Widget.MaterialComponents.Button.TextButton" />
     <TextView android:id="@+id/count" android:layout_width="match_parent" android:layout_height="wrap_content"

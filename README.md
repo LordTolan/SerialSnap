@@ -16,4 +16,6 @@ Enter the customer/site, choose the device type, and optionally enter its roof/a
 
 Tap a saved device to edit it or hold it to delete it. **Export CSV** creates a spreadsheet-ready commissioning list containing serial number, device type, site, location, and capture time.
 
+Enable **Replacement mode** to scan the new device first and then the old device it replaces. SerialSnap saves the two serial numbers as a linked replacement record and includes the old/new relationship in the CSV export.
+
 All OCR runs on the phone. The serial list is stored in the app's private preferences and remains after closing the app. Clearing app data or uninstalling removes it.

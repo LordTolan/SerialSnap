@@ -1,6 +1,6 @@
-# SerialSnap
+# SerialSnap 2.0 — Solar Serial Collector
 
-An Android app that repeatedly photographs equipment labels, reads likely serial numbers with on-device ML Kit OCR, asks the user to verify the result, and appends unique values to a persistent list.
+An Android field app for collecting SolarEdge optimizer/inverter and Enphase microinverter serial numbers. It reads both barcodes/QR codes and printed text, asks the installer to verify the result, and builds a persistent site inventory.
 
 ## Build and install
 
@@ -12,6 +12,8 @@ An Android app that repeatedly photographs equipment labels, reads likely serial
 
 ## Scan workflow
 
-Tap **Take Picture & Scan**, fill the label in the camera frame, and use bright even light. Verify the detected values (one per line), then tap **Add**. The camera reopens immediately for the next label. Duplicate values are skipped automatically.
+Enter the customer/site, choose the device type, and optionally enter its roof/array position. Tap **Scan Device**, fill the label in the camera frame, and use bright even light. Verify the values and tap **Save**. The camera reopens for the next unit. Duplicate values are skipped automatically.
+
+Tap a saved device to edit it or hold it to delete it. **Export CSV** creates a spreadsheet-ready commissioning list containing serial number, device type, site, location, and capture time.
 
 All OCR runs on the phone. The serial list is stored in the app's private preferences and remains after closing the app. Clearing app data or uninstalling removes it.

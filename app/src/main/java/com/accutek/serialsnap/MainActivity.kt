@@ -63,8 +63,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openCamera() {
-        val file = File(File(cacheDir, "photos").apply { mkdirs() }, "device_\${System.currentTimeMillis()}.jpg")
-        val uri = FileProvider.getUriForFile(this, "\$packageName.files", file)
+        val file = File(File(cacheDir, "photos").apply { mkdirs() }, "device_${System.currentTimeMillis()}.jpg")
+        val uri = FileProvider.getUriForFile(this, "$packageName.files", file)
         photoUri = uri
         takePicture.launch(uri)
     }
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
             TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS).process(image)
                 .addOnSuccessListener {
                     val candidates = (codes + extractSerials(it.text)).distinct()
-                    binding.status.text = if (candidates.isEmpty()) "No serial found—enter it manually." else "Found \${candidates.size} possible serial(s)."
+                    binding.status.text = if (candidates.isEmpty()) "No serial found—enter it manually." else "Found ${candidates.size} possible serial(s)."
                     showDetectedEditor(candidates)
                 }.addOnFailureListener { showDetectedEditor(codes) }
         }.addOnFailureListener { runTextOnly(image) }
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
     private fun clean(value: String) = value.trim().trim('.', ':', '-', '#').replace(" ", "").uppercase(Locale.US)
 
     private fun showDetectedEditor(found: List<String>) {
-        val input = EditText(this).apply { setText(found.joinToString("\\n")); hint = "One serial number per line"; minLines = 4 }
+        val input = EditText(this).apply { setText(found.joinToString("\n")); hint = "One serial number per line"; minLines = 4 }
         AlertDialog.Builder(this).setTitle("Verify serial numbers")
             .setMessage("Remove wrong results or correct characters before saving.")
             .setView(input).setNegativeButton("Cancel", null)
@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         val location = binding.locationNote.text.toString().trim()
         newValues.forEach { records.add(DeviceRecord(it, site, type, location, System.currentTimeMillis())) }
         saveRecords(); saveLastContext(); render()
-        binding.status.text = "Saved \${newValues.size}; skipped \${values.size - newValues.size} duplicate(s)."
+        binding.status.text = "Saved ${newValues.size}; skipped ${values.size - newValues.size} duplicate(s)."
         if (newValues.isNotEmpty()) requestCamera()
     }
 
@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun confirmDelete(position: Int) {
-        AlertDialog.Builder(this).setTitle("Delete \${records[position].serial}?")
+        AlertDialog.Builder(this).setTitle("Delete ${records[position].serial}?")
             .setNegativeButton("Cancel", null).setPositiveButton("Delete") { _, _ -> records.removeAt(position); saveRecords(); render() }.show()
     }
     private fun confirmClear() {
@@ -156,20 +156,20 @@ class MainActivity : AppCompatActivity() {
     private fun exportCsv() {
         if (records.isEmpty()) return toast("There are no records to export.")
         val safeSite = binding.siteName.text.toString().ifBlank { "all-sites" }.replace(Regex("[^A-Za-z0-9_-]"), "_")
-        val file = File(cacheDir, "SerialSnap_\${safeSite}_\${dateStamp()}.csv")
+        val file = File(cacheDir, "SerialSnap_${safeSite}_${dateStamp()}.csv")
         val rows = mutableListOf("Serial Number,Device Type,Site,Location,Captured At")
         records.forEach { r -> rows += listOf(r.serial, r.type, r.site, r.location, dateTime(r.capturedAt)).joinToString(",") { csv(it) } }
-        file.writeText(rows.joinToString("\\n"))
-        val uri = FileProvider.getUriForFile(this, "\$packageName.files", file)
+        file.writeText(rows.joinToString("\n"))
+        val uri = FileProvider.getUriForFile(this, "$packageName.files", file)
         startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
             type = "text/csv"; putExtra(Intent.EXTRA_STREAM, uri); addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }, "Share serial-number list"))
     }
 
     private fun render() {
-        binding.count.text = "\${records.size} device\${if (records.size == 1) "" else "s"} — tap to edit, hold to delete"
+        binding.count.text = "${records.size} device${if (records.size == 1) "" else "s"} — tap to edit, hold to delete"
         binding.serialList.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1,
-            records.map { "\${it.serial}\\n\${it.type} • \${it.site.ifBlank { "No site" }}\${if (it.location.isBlank()) "" else " • \${it.location}"}" })
+            records.map { "${it.serial}\n${it.type} • ${it.site.ifBlank { "No site" }}${if (it.location.isBlank()) "" else " • ${it.location}"}" })
     }
 
     private fun saveRecords() {
@@ -191,6 +191,6 @@ class MainActivity : AppCompatActivity() {
     private fun prefs() = getSharedPreferences("serialsnap", MODE_PRIVATE)
     private fun dateTime(time: Long) = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date(time))
     private fun dateStamp() = SimpleDateFormat("yyyyMMdd_HHmm", Locale.US).format(Date())
-    private fun csv(value: String) = "\\"\${value.replace("\\"", "\\"\\"")}\\""
+    private fun csv(value: String) = "\"" + value.replace("\"", "\"\"") + "\""
     private fun toast(message: String) = Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 }

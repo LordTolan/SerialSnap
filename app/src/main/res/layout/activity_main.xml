@@ -1,25 +1,60 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:padding="16dp">
+    android:orientation="vertical" android:padding="14dp" android:background="@color/white">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical" android:background="@drawable/header_background">
+        <ImageView android:layout_width="58dp" android:layout_height="58dp"
+            android:src="@drawable/ic_accutek_solar" android:contentDescription="Accutek Solar" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="ACCUTEK SOLAR" android:textColor="@color/solar_gold" android:textSize="22sp" android:textStyle="bold" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Serial Collector" android:textColor="@color/white" android:textSize="17sp" />
+        </LinearLayout>
+    </LinearLayout>
+
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Solar Serial Collector" android:textSize="27sp" android:textStyle="bold" android:textColor="@color/navy" />
+        android:layout_marginTop="12dp" android:text="CURRENT JOB" android:textColor="@color/navy"
+        android:textSize="12sp" android:textStyle="bold" />
     <EditText android:id="@+id/siteName" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:hint="Customer or site name" android:inputType="textCapWords" android:singleLine="true" />
-    <Spinner android:id="@+id/deviceType" android:layout_width="match_parent" android:layout_height="48dp" />
+        android:hint="Customer or site name" android:inputType="textCapWords" android:singleLine="true" android:textColor="@color/ink" />
+    <Spinner android:id="@+id/deviceType" android:layout_width="match_parent" android:layout_height="46dp" />
     <EditText android:id="@+id/locationNote" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:hint="Location (roof, array, row, position)" android:inputType="textCapSentences" android:singleLine="true" />
+        android:hint="Roof, array, row, or position" android:inputType="textCapSentences"
+        android:singleLine="true" android:textColor="@color/ink" />
+
     <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="6dp" android:text="Scan the barcode or printed serial on each device label." android:textSize="15sp" />
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-        <Button android:id="@+id/scanButton" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Scan Device" />
-        <Button android:id="@+id/manualButton" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Manual Add" />
+        android:layout_marginTop="8dp" android:background="@drawable/status_background"
+        android:text="Scan the barcode or printed serial on each device label."
+        android:textColor="@color/ink" android:textSize="14sp" />
+
+    <Button android:id="@+id/scanButton" android:layout_width="match_parent" android:layout_height="58dp"
+        android:layout_marginTop="10dp" android:text="SCAN NEXT DEVICE" android:textSize="17sp"
+        android:textStyle="bold" android:textColor="@color/navy" android:backgroundTint="@color/solar_gold" />
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button android:id="@+id/manualButton" android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:layout_marginEnd="4dp" android:text="Manual Add"
+            android:textColor="@color/white" android:backgroundTint="@color/navy_light" />
+        <Button android:id="@+id/exportButton" android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:layout_marginStart="4dp" android:text="Export CSV"
+            android:textColor="@color/white" android:backgroundTint="@color/navy_light" />
     </LinearLayout>
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-        <Button android:id="@+id/exportButton" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Export CSV" />
-        <Button android:id="@+id/clearButton" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Clear All" />
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center_vertical" android:orientation="horizontal">
+        <TextView android:id="@+id/count" android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="0 devices" android:textColor="@color/navy"
+            android:textStyle="bold" android:textSize="16sp" />
+        <Button android:id="@+id/clearButton" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Clear All" android:textColor="@color/muted"
+            style="@style/Widget.MaterialComponents.Button.TextButton" />
     </LinearLayout>
-    <TextView android:id="@+id/count" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="0 devices" android:textStyle="bold" android:textSize="18sp" />
+
     <ListView android:id="@+id/serialList" android:layout_width="match_parent" android:layout_height="0dp"
-        android:layout_weight="1" android:dividerHeight="1dp" />
+        android:layout_weight="1" android:divider="@color/line" android:dividerHeight="1dp"
+        android:listSelector="@color/sky" android:paddingBottom="8dp" android:clipToPadding="false" />
 </LinearLayout>

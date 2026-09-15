@@ -1,5 +1,11 @@
 <resources>
-    <color name="navy">#101828</color>
-    <color name="blue">#2563EB</color>
+    <color name="navy">#0B2545</color>
+    <color name="navy_light">#163B65</color>
+    <color name="solar_gold">#F5B700</color>
+    <color name="solar_gold_dark">#C98E00</color>
+    <color name="sky">#EAF4FB</color>
+    <color name="ink">#17212B</color>
+    <color name="muted">#5C6B78</color>
+    <color name="line">#D8E2EA</color>
     <color name="white">#FFFFFF</color>
 </resources>

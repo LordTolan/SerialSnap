@@ -27,11 +27,19 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-data class DeviceRecord(var serial: String, var site: String, var type: String, var location: String, val capturedAt: Long)
+data class DeviceRecord(
+    var serial: String,
+    var site: String,
+    var type: String,
+    var location: String,
+    val capturedAt: Long,
+    var replacesSerial: String = ""
+)
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var photoUri: Uri? = null
+    private var pendingNewSerial: String? = null
     private val records = mutableListOf<DeviceRecord>()
     private val deviceTypes = listOf("SolarEdge Power Optimizer", "SolarEdge Inverter", "Enphase Microinverter", "Other Solar Device")
 
@@ -50,6 +58,10 @@ class MainActivity : AppCompatActivity() {
         loadRecords(); loadLastContext(); render()
         binding.scanButton.setOnClickListener { requestCamera() }
         binding.manualButton.setOnClickListener { showDetectedEditor(emptyList()) }
+        binding.replacementMode.setOnCheckedChangeListener { _, enabled ->
+            pendingNewSerial = null
+            updateReplacementUi(enabled)
+        }
         binding.exportButton.setOnClickListener { exportCsv() }
         binding.clearButton.setOnClickListener { confirmClear() }
         binding.serialList.setOnItemClickListener { _, _, position, _ -> editRecord(position) }
@@ -106,10 +118,66 @@ class MainActivity : AppCompatActivity() {
 
     private fun showDetectedEditor(found: List<String>) {
         val input = EditText(this).apply { setText(found.joinToString("\n")); hint = "One serial number per line"; minLines = 4 }
-        AlertDialog.Builder(this).setTitle("Verify serial numbers")
-            .setMessage("Remove wrong results or correct characters before saving.")
+        val replacement = binding.replacementMode.isChecked
+        val scanningOld = replacement && pendingNewSerial != null
+        val title = when {
+            scanningOld -> "Verify OLD serial"
+            replacement -> "Verify NEW serial"
+            else -> "Verify serial numbers"
+        }
+        val message = if (replacement) "Keep exactly one serial number for this device." else "Remove wrong results or correct characters before saving."
+        AlertDialog.Builder(this).setTitle(title)
+            .setMessage(message)
             .setView(input).setNegativeButton("Cancel", null)
-            .setPositiveButton("Save") { _, _ -> addSerials(input.text.lines()) }.show()
+            .setPositiveButton(when { scanningOld -> "Save Replacement"; replacement -> "Continue"; else -> "Save" }) { _, _ ->
+                if (replacement) handleReplacement(input.text.lines()) else addSerials(input.text.lines())
+            }.show()
+    }
+
+    private fun handleReplacement(raw: List<String>) {
+        val values = raw.map(::clean).filter { it.isNotBlank() }.distinct()
+        if (values.size != 1) {
+            binding.status.text = "Replacement mode requires exactly one serial per scan. Please try again."
+            return
+        }
+        val serial = values.first()
+        if (pendingNewSerial == null) {
+            if (records.any { it.serial == serial }) {
+                binding.status.text = "That new serial is already in the list."
+                return
+            }
+            pendingNewSerial = serial
+            updateReplacementUi(true)
+            binding.status.text = "New device: $serial. Now scan the OLD device being replaced."
+            requestCamera()
+        } else {
+            val newSerial = pendingNewSerial!!
+            if (newSerial == serial) {
+                binding.status.text = "The old and new serial numbers cannot be the same."
+                return
+            }
+            records.add(DeviceRecord(
+                newSerial,
+                binding.siteName.text.toString().trim(),
+                binding.deviceType.selectedItem.toString(),
+                binding.locationNote.text.toString().trim(),
+                System.currentTimeMillis(),
+                serial
+            ))
+            pendingNewSerial = null
+            saveRecords(); saveLastContext(); render(); updateReplacementUi(true)
+            binding.status.text = "Replacement saved: NEW $newSerial replaces OLD $serial."
+        }
+    }
+
+    private fun updateReplacementUi(enabled: Boolean) {
+        binding.scanButton.text = when {
+            !enabled -> "SCAN NEXT DEVICE"
+            pendingNewSerial == null -> "SCAN NEW REPLACEMENT"
+            else -> "SCAN OLD DEVICE"
+        }
+        if (enabled && pendingNewSerial == null) binding.status.text = "Replacement mode: scan the NEW device first."
+        if (!enabled) binding.status.text = "Scan the barcode or printed serial on each device label."
     }
 
     private fun addSerials(raw: List<String>) {
@@ -135,11 +203,13 @@ class MainActivity : AppCompatActivity() {
             setSelection(deviceTypes.indexOf(record.type).coerceAtLeast(0))
         }
         val location = EditText(this).apply { hint = "Location"; setText(record.location) }
-        box.addView(serial); box.addView(site); box.addView(type); box.addView(location)
+        val replaces = EditText(this).apply { hint = "Old serial replaced (optional)"; setText(record.replacesSerial) }
+        box.addView(serial); box.addView(site); box.addView(type); box.addView(location); box.addView(replaces)
         AlertDialog.Builder(this).setTitle("Edit device").setView(box).setNegativeButton("Cancel", null)
             .setPositiveButton("Save") { _, _ ->
                 record.serial = clean(serial.text.toString()); record.site = site.text.toString().trim()
                 record.type = type.selectedItem.toString(); record.location = location.text.toString().trim()
+                record.replacesSerial = clean(replaces.text.toString())
                 saveRecords(); render()
             }.show()
     }
@@ -157,8 +227,8 @@ class MainActivity : AppCompatActivity() {
         if (records.isEmpty()) return toast("There are no records to export.")
         val safeSite = binding.siteName.text.toString().ifBlank { "all-sites" }.replace(Regex("[^A-Za-z0-9_-]"), "_")
         val file = File(cacheDir, "SerialSnap_${safeSite}_${dateStamp()}.csv")
-        val rows = mutableListOf("Serial Number,Device Type,Site,Location,Captured At")
-        records.forEach { r -> rows += listOf(r.serial, r.type, r.site, r.location, dateTime(r.capturedAt)).joinToString(",") { csv(it) } }
+        val rows = mutableListOf("New/Installed Serial,Replaces Old Serial,Replacement,Device Type,Site,Location,Captured At")
+        records.forEach { r -> rows += listOf(r.serial, r.replacesSerial, if (r.replacesSerial.isBlank()) "No" else "Yes", r.type, r.site, r.location, dateTime(r.capturedAt)).joinToString(",") { csv(it) } }
         file.writeText(rows.joinToString("\n"))
         val uri = FileProvider.getUriForFile(this, "$packageName.files", file)
         startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
@@ -169,12 +239,12 @@ class MainActivity : AppCompatActivity() {
     private fun render() {
         binding.count.text = "${records.size} device${if (records.size == 1) "" else "s"} — tap to edit, hold to delete"
         binding.serialList.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_2, android.R.id.text1,
-            records.map { "${it.serial}\n${it.type} • ${it.site.ifBlank { "No site" }}${if (it.location.isBlank()) "" else " • ${it.location}"}" })
+            records.map { "${it.serial}${if (it.replacesSerial.isBlank()) "" else "  ← replaces ${it.replacesSerial}"}\n${it.type} • ${it.site.ifBlank { "No site" }}${if (it.location.isBlank()) "" else " • ${it.location}"}" })
     }
 
     private fun saveRecords() {
         val array = JSONArray()
-        records.forEach { r -> array.put(JSONObject().put("serial", r.serial).put("site", r.site).put("type", r.type).put("location", r.location).put("capturedAt", r.capturedAt)) }
+        records.forEach { r -> array.put(JSONObject().put("serial", r.serial).put("site", r.site).put("type", r.type).put("location", r.location).put("capturedAt", r.capturedAt).put("replacesSerial", r.replacesSerial)) }
         prefs().edit().putString("records_v2", array.toString()).apply()
     }
     private fun loadRecords() {
@@ -182,7 +252,7 @@ class MainActivity : AppCompatActivity() {
         saved?.let { json -> runCatching {
             val array = JSONArray(json)
             for (i in 0 until array.length()) array.getJSONObject(i).let { o ->
-                records += DeviceRecord(o.getString("serial"), o.optString("site"), o.optString("type", "Other Solar Device"), o.optString("location"), o.optLong("capturedAt"))
+                records += DeviceRecord(o.getString("serial"), o.optString("site"), o.optString("type", "Other Solar Device"), o.optString("location"), o.optLong("capturedAt"), o.optString("replacesSerial"))
             }
         } }
         if (saved == null) {

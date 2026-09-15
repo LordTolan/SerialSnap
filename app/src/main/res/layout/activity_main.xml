@@ -1,18 +1,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:padding="20dp">
+    android:orientation="vertical" android:padding="16dp">
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="SerialSnap" android:textSize="30sp" android:textStyle="bold" android:textColor="@color/navy" />
+        android:text="Solar Serial Collector" android:textSize="27sp" android:textStyle="bold" android:textColor="@color/navy" />
+    <EditText android:id="@+id/siteName" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:hint="Customer or site name" android:inputType="textCapWords" android:singleLine="true" />
+    <Spinner android:id="@+id/deviceType" android:layout_width="match_parent" android:layout_height="48dp" />
+    <EditText android:id="@+id/locationNote" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:hint="Location (roof, array, row, position)" android:inputType="textCapSentences" android:singleLine="true" />
     <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="6dp" android:text="Photograph a label to capture its serial number." android:textSize="16sp" />
-    <Button android:id="@+id/scanButton" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_marginTop="18dp" android:text="Take Picture &amp; Scan" />
-    <Button android:id="@+id/clearButton" android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_gravity="end" android:text="Clear list" style="@style/Widget.MaterialComponents.Button.TextButton" />
+        android:layout_marginTop="6dp" android:text="Scan the barcode or printed serial on each device label." android:textSize="15sp" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <Button android:id="@+id/scanButton" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Scan Device" />
+        <Button android:id="@+id/manualButton" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Manual Add" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <Button android:id="@+id/exportButton" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Export CSV" />
+        <Button android:id="@+id/clearButton" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Clear All" />
+    </LinearLayout>
     <TextView android:id="@+id/count" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="0 serial numbers" android:textStyle="bold" android:textSize="18sp" />
-    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="8dp">
-        <TextView android:id="@+id/serialList" android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="No serial numbers yet." android:textIsSelectable="true" android:textSize="18sp" android:lineSpacingExtra="8dp" />
-    </ScrollView>
+        android:text="0 devices" android:textStyle="bold" android:textSize="18sp" />
+    <ListView android:id="@+id/serialList" android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:dividerHeight="1dp" />
 </LinearLayout>

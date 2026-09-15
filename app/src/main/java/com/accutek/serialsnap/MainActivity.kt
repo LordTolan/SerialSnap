@@ -178,12 +178,18 @@ class MainActivity : AppCompatActivity() {
         prefs().edit().putString("records_v2", array.toString()).apply()
     }
     private fun loadRecords() {
-        prefs().getString("records_v2", null)?.let { json -> runCatching {
+        val saved = prefs().getString("records_v2", null)
+        saved?.let { json -> runCatching {
             val array = JSONArray(json)
             for (i in 0 until array.length()) array.getJSONObject(i).let { o ->
                 records += DeviceRecord(o.getString("serial"), o.optString("site"), o.optString("type", "Other Solar Device"), o.optString("location"), o.optLong("capturedAt"))
             }
         } }
+        if (saved == null) {
+            val oldSerials = getSharedPreferences("serials", MODE_PRIVATE).getStringSet("items", emptySet()).orEmpty()
+            oldSerials.sorted().forEach { records += DeviceRecord(it, "", "Other Solar Device", "", System.currentTimeMillis()) }
+            if (oldSerials.isNotEmpty()) saveRecords()
+        }
     }
 
     private fun saveLastContext() = prefs().edit().putString("site", binding.siteName.text.toString()).putInt("type", binding.deviceType.selectedItemPosition).putString("location", binding.locationNote.text.toString()).apply()

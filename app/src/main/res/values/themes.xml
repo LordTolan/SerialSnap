@@ -1,6 +1,13 @@
 <resources>
-    <style name="Theme.SerialSnap" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/blue</item>
+    <style name="Theme.SerialSnap" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/navy</item>
+        <item name="colorPrimaryVariant">@color/navy_light</item>
+        <item name="colorSecondary">@color/solar_gold</item>
+        <item name="android:colorAccent">@color/solar_gold_dark</item>
+        <item name="android:navigationBarColor">@color/navy</item>
+        <item name="android:statusBarColor">@color/navy</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">@color/white</item>
         <item name="android:fontFamily">sans</item>
     </style>
 </resources>
